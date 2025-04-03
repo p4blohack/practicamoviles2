@@ -3,202 +3,267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Autenticación</title>
+  <title>Gestión de Usuarios</title>
   <style>
+    /* Estilos Generales */
     body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 0 auto;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f7fc;
+      margin: 0;
       padding: 20px;
-    }
-    .form-container {
-      background: #f5f5f5;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    h1 {
       color: #333;
+    }
+
+    h1, h2 {
+      color: #4CAF50;
       text-align: center;
     }
-    input, select, button {
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    /* Contenedores */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .form-container, .table-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 300px;
+    }
+
+    /* Estilos para el formulario */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    select {
       width: 100%;
       padding: 10px;
-      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
       box-sizing: border-box;
     }
-    button {
+
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 5px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Estilos para los botones */
+    button, .submit-btn {
       background-color: #4CAF50;
       color: white;
+      padding: 12px 20px;
+      font-size: 16px;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
     }
-    button:hover {
-      opacity: 0.8;
+
+    button:hover, .submit-btn:hover {
+      background-color: #45a049;
     }
+
+    /* Estilos para la tabla */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed; /* Esto asegura que las celdas tengan un ancho fijo */
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      word-wrap: break-word; /* Asegura que las palabras largas se ajusten en las celdas */
+      overflow-wrap: break-word; /* Alternativa para asegurar el ajuste */
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: 500;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    /* Badges para tipos de usuario */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .badge-normal {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .badge-admin {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .badge-superadmin {
+      background-color: #f3e5f5;
+      color: #8e24aa;
+    }
+
+    /* Mensajes */
     .message {
       padding: 10px;
-      margin: 10px 0;
       border-radius: 4px;
-      display: none;
+      margin: 10px 0;
+      text-align: center;
     }
+
     .success {
       background-color: #dff0d8;
       color: #3c763d;
     }
+
     .error {
       background-color: #f2dede;
       color: #a94442;
     }
-    .welcome {
-      display: none;
-      text-align: center;
+
+    .loading {
+      color: #31708f;
+      background-color: #d9edf7;
     }
-    .hidden {
-      display: none;
+
+    /* Responsividad */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      th, td {
+        padding: 8px 10px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="loginForm" class="form-container">
-    <h1>Iniciar Sesión</h1>
-    <input type="number" id="loginIdentificacion" placeholder="Identificación" required>
-    <input type="password" id="loginPassword" placeholder="Contraseña" required>
-    <button id="loginBtn">Ingresar</button>
-    <p>¿No tienes cuenta? <a href="#" id="showRegister">Regístrate aquí</a></p>
-    <div id="loginMessage" class="message"></div>
+  <h1>Gestión de Usuarios</h1>
+  
+  <div class="container">
+    <!-- Formulario de registro -->
+    <div class="form-container">
+      <h2>Registrar Nuevo Usuario</h2>
+      <div id="formMessage" class="message" style="display: none;"></div>
+      
+      <form id="userForm">
+        <div class="form-group">
+          <label for="identificacion">Identificación:</label>
+          <input type="number" id="identificacion" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="nombre_usuario">Nombre de Usuario:</label>
+          <input type="text" id="nombre_usuario" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="clave_encriptada">Contraseña:</label>
+          <input type="password" id="clave_encriptada" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Tipo de Usuario:</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="tipo_usuario" value="normal" checked>
+              Normal
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="tipo_usuario" value="administrador">
+              Administrador
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="tipo_usuario" value="superadministrador">
+              Super Admin
+            </label>
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn">Registrar Usuario</button>
+      </form>
+    </div>
+    
+    <!-- Tabla de usuarios -->
+    <div class="table-container">
+      <h2>Usuarios Registrados</h2>
+      <button id="loadButton">Actualizar Lista</button>
+      <div id="loadingMessage" class="message loading" style="display: none;">Cargando datos...</div>
+      <div id="errorMessage" class="message error" style="display: none;"></div>
+      
+      <table id="userTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Identificación</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Datos de usuarios se cargarán aquí -->
+        </tbody>
+      </table>
+    </div>
   </div>
- 
-  <div id="registerForm" class="form-container hidden">
-    <h1>Registro</h1>
-    <input type="number" id="regIdentificacion" placeholder="Identificación" required>
-    <input type="text" id="regNombre" placeholder="Nombre completo" required>
-    <input type="email" id="regEmail" placeholder="Email" required>
-    <input type="password" id="regPassword" placeholder="Contraseña" required>
-    <select id="regTipoUsuario" required>
-      <option value="">Selecciona tipo de usuario</option>
-      <option value="normal">Usuario Normal</option>
-      <option value="admin">Administrador</option>
-      <option value="superadmin">Super Administrador</option>
-    </select>
-    <button id="registerBtn">Registrarse</button>
-    <p>¿Ya tienes cuenta? <a href="#" id="showLogin">Inicia sesión aquí</a></p>
-    <div id="registerMessage" class="message"></div>
-  </div>
- 
-  <div id="welcomePanel" class="welcome">
-    <h1 id="welcomeTitle">Bienvenido</h1>
-    <p id="userInfo"></p>
-    <button id="logoutBtn">Cerrar Sesión</button>
-  </div>
- 
-  <script>
-    // Elementos del DOM
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const welcomePanel = document.getElementById('welcomePanel');
-    const loginMessage = document.getElementById('loginMessage');
-    const registerMessage = document.getElementById('registerMessage');
-    const welcomeTitle = document.getElementById('welcomeTitle');
-    const userInfo = document.getElementById('userInfo');
- 
-    // Mostrar/ocultar formularios
-    document.getElementById('showRegister').addEventListener('click', (e) => {
-      e.preventDefault();
-      loginForm.classList.add('hidden');
-      registerForm.classList.remove('hidden');
-    });
- 
-    document.getElementById('showLogin').addEventListener('click', (e) => {
-      e.preventDefault();
-      registerForm.classList.remove('hidden');
-      loginForm.classList.add('hidden');
-    });
- 
-    // Login
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      const identificacion = document.getElementById('loginIdentificacion').value;
-      const password = document.getElementById('loginPassword').value;
- 
-      try {
-        const response = await fetch('http://localhost:3000/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ identificacion, password })
-        });
- 
-        const data = await response.json();
- 
-        if (!response.ok) {
-          throw new Error(data.error);
-        }
- 
-        // Mostrar bienvenida
-        welcomeTitle.textContent = Bienvenido, ${data.user.nombre_usuario};
-        userInfo.innerHTML = `
-          <strong>Email:</strong> ${data.user.email}<br>
-          <strong>Tipo:</strong> ${data.user.usuario_superadministrador ? 'Super Admin' :
-                                 data.user.usuario_administrador ? 'Administrador' : 'Usuario Normal'}
-        `;
-       
-        loginForm.classList.add('hidden');
-        registerForm.classList.add('hidden');
-        welcomePanel.style.display = 'block';
-       
-      } catch (error) {
-        loginMessage.textContent = error.message;
-        loginMessage.className = 'message error';
-        loginMessage.style.display = 'block';
-      }
-    });
- 
-    // Registro
-    document.getElementById('registerBtn').addEventListener('click', async () => {
-      const userData = {
-        identificacion: document.getElementById('regIdentificacion').value,
-        nombre: document.getElementById('regNombre').value,
-        email: document.getElementById('regEmail').value,
-        password: document.getElementById('regPassword').value,
-        tipoUsuario: document.getElementById('regTipoUsuario').value
-      };
- 
-      try {
-        const response = await fetch('http://localhost:3000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-        });
- 
-        const data = await response.json();
- 
-        if (!response.ok) {
-          throw new Error(data.error);
-        }
- 
-        registerMessage.textContent = data.message;
-        registerMessage.className = 'message success';
-        registerMessage.style.display = 'block';
-       
-        // Limpiar formulario
-        document.getElementById('registerForm').reset();
-       
-      } catch (error) {
-        registerMessage.textContent = error.message;
-        registerMessage.className = 'message error';
-        registerMessage.style.display = 'block';
-      }
-    });
- 
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      welcomePanel.style.display = 'none';
-      loginForm.classList.remove('hidden');
-      document.getElementById('loginForm').reset();
-    });
-  </script>
+
+  <script src="guardardatos.js"></script>
 </body>
 </html>
